@@ -1,0 +1,217 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = false
+scan_timeout = 10
+
+[character]
+success_symbol = '[❯](bold green)'
+
+[package]
+disabled = true
+
+[python]
+disabled = false
+format = '[(\($virtualenv\))]($style) '
+pyenv_version_name = false
+style = "yellow bold"
+symbol = " "
+
+[rust]
+disabled = false
+symbol = " "
+
+[nodejs]
+disabled = false
+symbol = " "
+
+[golang]
+disabled = false
+symbol = " "
+
+[java]
+disabled = false
+symbol = " "
+
+[ruby]
+disabled = false
+symbol = " "
+
+[php]
+disabled = false
+symbol = " "
+
+[deno]
+disabled = false
+symbol = " "
+
+[bun]
+disabled = false
+symbol = " "
+
+[dart]
+disabled = false
+symbol = " "
+
+[elixir]
+disabled = false
+symbol = " "
+
+[elm]
+disabled = false
+symbol = " "
+
+[erlang]
+disabled = false
+symbol = " "
+
+[haskell]
+disabled = false
+symbol = " "
+
+[julia]
+disabled = false
+symbol = " "
+
+[kotlin]
+disabled = false
+symbol = " "
+
+[lua]
+disabled = false
+symbol = " "
+
+[nim]
+disabled = false
+symbol = " "
+
+[ocaml]
+disabled = false
+symbol = " "
+
+[perl]
+disabled = false
+symbol = " "
+
+[purescript]
+disabled = false
+symbol = " "
+
+[rlang]
+disabled = false
+symbol = "󰟔 "
+
+[scala]
+disabled = false
+symbol = " "
+
+[swift]
+disabled = false
+symbol = " "
+
+[zig]
+disabled = false
+symbol = " "
+
+[c]
+disabled = false
+symbol = " "
+
+[cmake]
+disabled = false
+symbol = " "
+
+[cobol]
+disabled = false
+symbol = " "
+
+[crystal]
+disabled = false
+symbol = " "
+
+[daml]
+disabled = false
+symbol = " "
+
+[fennel]
+disabled = false
+symbol = " "
+
+[gleam]
+disabled = false
+symbol = " "
+
+[gradle]
+disabled = false
+symbol = " "
+
+[haxe]
+disabled = false
+symbol = " "
+
+[odin]
+disabled = false
+symbol = "󰟢 "
+
+[raku]
+disabled = false
+symbol = " "
+
+[red]
+disabled = false
+symbol = " "
+
+[typst]
+disabled = false
+symbol = " "
+
+[vlang]
+disabled = false
+symbol = " "
+
+[cpp]
+disabled = false
+symbol = " "
+
+[dotnet]
+disabled = false
+symbol = "󰌛 "
+
+[fortran]
+disabled = false
+symbol = " "
+
+[helm]
+disabled = false
+symbol = " "
+
+[maven]
+disabled = false
+symbol = " "
+
+[mojo]
+disabled = false
+symbol = " "
+
+[opa]
+disabled = false
+symbol = " "
+
+[quarto]
+disabled = false
+symbol = " "
+
+[solidity]
+disabled = false
+symbol = " "
+
+[terraform]
+disabled = false
+symbol = " "
+
+[vagrant]
+disabled = false
+symbol = " "
+
+[xmake]
+disabled = false
+symbol = " "
