@@ -1,0 +1,36 @@
+{
+    "label" : "lock",
+    "action" : "swaylock -f --color 1e1e2e --inside-color 1e1e2e --ring-color cba6f7 --key-hl-color f5c2e7 --line-color 00000000 --separator-color 00000000 --text-color cdd6f4 --inside-ver-color 89b4fa --ring-ver-color 89b4fa --inside-wrong-color f38ba8 --ring-wrong-color f38ba8 --inside-clear-color fab387 --ring-clear-color fab387 --bs-hl-color f38ba8",
+    "text" : "Lock",
+    "keybind" : "l"
+}
+{
+    "label" : "hibernate",
+    "action" : "systemctl hibernate",
+    "text" : "Hibernate",
+    "keybind" : "h"
+}
+{
+    "label" : "logout",
+    "action" : "swaymsg exit",
+    "text" : "Logout",
+    "keybind" : "e"
+}
+{
+    "label" : "shutdown",
+    "action" : "systemctl poweroff",
+    "text" : "Shutdown",
+    "keybind" : "s"
+}
+{
+    "label" : "suspend",
+    "action" : "systemctl suspend",
+    "text" : "Suspend",
+    "keybind" : "u"
+}
+{
+    "label" : "reboot",
+    "action" : "systemctl reboot",
+    "text" : "Reboot",
+    "keybind" : "r"
+}

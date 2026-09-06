@@ -1,0 +1,215 @@
+{
+    "layer": "top",
+    "position": "top",
+    "spacing": 4,
+    "height": 38,
+    "margin": "8px 8px 0 8px",
+    "modules-left": [
+        "custom/logo",
+        "sway/workspaces",
+        "custom/weather",
+        "custom/media"
+    ],
+    "modules-center": [
+        "clock"
+    ],
+    "modules-right": [
+        "custom/keyboard",
+        "tray",
+        "custom/timer",
+        "network",
+        "pulseaudio",
+        "battery",
+        "custom/power"
+    ],
+    "wlr/taskbar": {
+        "format": "{icon}",
+        "on-click": "activate",
+        "on-click-right": "fullscreen",
+        "icon-theme": "Papirus-Dark",
+        "icon-size": 25,
+        "tooltip-format": "{title}"
+    },
+    "sway/workspaces": {
+        "on-click": "activate",
+        "format": "{icon} {name}",
+        "format-icons": {
+            "default": "",
+            "1": "",
+            "2": "",
+            "3": "",
+            "4": "",
+            "5": "",
+            "6": "",
+            "7": "",
+            "8": "",
+            "9": "",
+            "active": "󱓻",
+            "urgent": ""
+        },
+        "persistent_workspaces": {
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": []
+        }
+    },
+    "wlr/workspaces": {
+        "on-click": "activate",
+        "format": "{icon} {name}",
+        "format-icons": {
+            "default": "",
+            "1": "",
+            "2": "",
+            "3": "",
+            "4": "",
+            "5": "",
+            "6": "",
+            "7": "",
+            "8": "",
+            "9": "",
+            "active": "󱓻",
+            "urgent": ""
+        },
+        "persistent_workspaces": {
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": []
+        }
+    },
+    "custom/weather": {
+        "format": "{}",
+        "format-alt": "{alt}: {}",
+        "format-alt-click": "click-right",
+        "interval": 3600,
+        "return-type": "json",
+        "exec": "~/.config/hypr/scripts/weather.sh",
+        "exec-if": "ping wttr.in -c1"
+    },
+    "tray": {
+        "spacing": 10
+    },
+    "clock": {
+        "tooltip-format": "{calendar}",
+        "format": "  {:%H:%M  󰸘 %a, %d %b %Y}",
+        "calendar": {
+            "iso8601": true
+        }
+    },
+    "custom/timer": {
+        "exec": "/home/luca/.config/waybar/scripts/waybar_timer hook",
+        "exec-on-event": false,
+        "return-type": "json",
+        "format": "{icon} {0}",
+        "format-icons": {
+            "standby": " STANDBY",
+            "running": "󰦖 RUNNING",
+            "paused": "󰥕 PAUSE"
+        },
+        "on-click": "/home/luca/.config/waybar/scripts/waybar_timer new 25 'notify-send \"Session finished\"'",
+        "on-click-middle": "/home/luca/.config/waybar/scripts/waybar_timer cancel",
+        "on-click-right": "/home/luca/.config/waybar/scripts/waybar_timer togglepause",
+        "on-scroll-up": "/home/luca/.config/waybar/scripts/waybar_timer increase 60 || /home/luca/.config/waybar/scripts/waybar_timer new 1 'notify-send -a \"Waybar-Timer\" -u critical -t 10000 \"Timer expired!\"'",
+        "on-scroll-down": "/home/luca/.config/waybar/scripts/waybar_timer decrease 60"
+    },
+    "network": {
+        "format-wifi": "{icon}",
+        "format-icons": [
+            "󰤯",
+            "󰤟",
+            "󰤢",
+            "󰤥",
+            "󰤨"
+        ],
+        "format-ethernet": "󰀂",
+        "format-disconnected": "󰖪",
+        "format-alt": " {bandwidthUpBits} |  {bandwidthDownBits}",
+        "tooltip-format-wifi": "{icon} {essid} Wi-Fi",
+        "tooltip-format-ethernet": "Ethernet",
+        "tooltip-format-disconnected": "Disconnected",
+        "interval": 1,
+        "nospacing": 1,
+        "on-click": "nm-connection-editor"
+    },
+    "pulseaudio": {
+        "format": "{volume}% {icon}",
+        "format-bluetooth": "󰂰",
+        "nospacing": 1,
+        "tooltip-format": "Volume : {volume}%",
+        "format-muted": "󰝟",
+        "format-icons": {
+            "headphone": "",
+            "default": [
+                "󰖀",
+                "󰕾",
+                ""
+            ]
+        },
+        "on-click": "pavucontrol",
+        "scroll-step": 1
+    },
+    "custom/logo": {
+        "format": "  ",
+        "tooltip": false,
+        "on-click": "cosmic-launcher",
+        "on-click-right": "kitty"
+    },
+    "custom/keyboard": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "~/.config/hypr/scripts/keyboard.sh",
+        "interval": 1
+    },
+    "custom/media": {
+        "format": "  {}",
+        "interval": 1,
+        "max-length": 50,
+        "escape": true,
+        "exec": "playerctl metadata --format='{{artist}} : {{title}}'"
+    },
+    "battery": {
+        "format": "{capacity}% {icon}",
+        "format-icons": {
+            "charging": [
+                "󰢜",
+                "󰂆",
+                "󰂇",
+                "󰂈",
+                "󰢝",
+                "󰂉",
+                "󰢞",
+                "󰂊",
+                "󰂋",
+                "󰂅"
+            ],
+            "default": [
+                "󰁺",
+                "󰁻",
+                "󰁼",
+                "󰁽",
+                "󰁾",
+                "󰁿",
+                "󰂀",
+                "󰂁",
+                "󰂂",
+                "󰁹"
+            ]
+        },
+        "format-full": "",
+        "interval": 5,
+        "states": {
+            "warning": 20,
+            "critical": 10
+        },
+        "tooltip": false
+    },
+    "custom/power": {
+        "format": "",
+        "tooltip": false,
+        "on-click": "wlogout --protocol layer-shell -b 3 -c 12 -r 12",
+        "on-click-right": "env XDG_CURRENT_DESKTOP=GNOME gnome-control-center"
+    }
+}

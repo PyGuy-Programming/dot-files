@@ -1,0 +1,272 @@
+/* Catppuccin Mocha - Modern Waybar - More Mocha */
+@define-color rosewater #f5e0dc;
+@define-color flamingo #f2cdcd;
+@define-color pink #f5c2e7;
+@define-color mauve #cba6f7;
+@define-color red #f38ba8;
+@define-color maroon #eba0ac;
+@define-color peach #fab387;
+@define-color yellow #f9e2af;
+@define-color green #a6e3a1;
+@define-color teal #94e2d5;
+@define-color sky #89dceb;
+@define-color sapphire #74c7ec;
+@define-color blue #89b4fa;
+@define-color lavender #b4befe;
+@define-color text #cdd6f4;
+@define-color subtext1 #bac2de;
+@define-color subtext0 #a6adc8;
+@define-color overlay2 #9399b2;
+@define-color overlay1 #7f849c;
+@define-color overlay0 #6c7086;
+@define-color surface2 #585b70;
+@define-color surface1 #45475a;
+@define-color surface0 #313244;
+@define-color base #1e1e2e;
+@define-color mantle #181825;
+@define-color crust #11111b;
+
+* {
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  font-family: "CaskaydiaCove Nerd Font", "JetBrainsMono Nerd Font", monospace;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+window#waybar {
+  background: alpha(@crust, 0.65);
+  border: 2px solid @mauve;
+  border-radius: 12px;
+  color: @text;
+}
+
+/* Tooltip - mantle - more translucent */
+tooltip {
+  background-color: alpha(@mantle, 0.75);
+  border: 1px solid alpha(@surface1, 0.7);
+  border-radius: 10px;
+  padding: 8px;
+}
+tooltip label {
+  color: @text;
+  padding: 4px;
+}
+
+/* Workspaces - pill next to weather - mocha surface - more translucent */
+#workspaces,
+#custom-workspaces {
+  background: alpha(@surface0, 0.65);
+  border: 1px solid alpha(@surface1, 0.7);
+  border-radius: 12px;
+  padding: 2px 4px;
+  margin: 6px 4px;
+}
+
+#workspaces button,
+#wlr-workspaces button {
+  all: initial;
+  min-width: 0;
+  padding: 4px 10px;
+  margin: 3px 2px;
+  border-radius: 8px;
+  background: transparent;
+  color: @overlay0;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+#workspaces button.active,
+#wlr-workspaces button.active {
+  background: @mauve;
+  color: @crust;
+  font-weight: 700;
+}
+
+#workspaces button:hover,
+#wlr-workspaces button:hover {
+  background: @surface1;
+  color: @text;
+}
+
+#workspaces button.urgent,
+#wlr-workspaces button.urgent {
+  background: @red;
+  color: @crust;
+}
+
+/* All modules - mocha pill - more translucent */
+#clock,
+#custom-weather,
+#custom-media,
+#custom-keyboard,
+#custom-timer,
+#custom-logo,
+#custom-power,
+#network,
+#pulseaudio,
+#battery,
+#tray,
+#cpu,
+#memory,
+#backlight,
+#mpris,
+#taskbar {
+  background: alpha(@surface0, 0.65);
+  border: 1px solid alpha(@surface1, 0.7);
+  border-radius: 12px;
+  padding: 6px 12px;
+  margin: 6px 3px;
+  color: @text;
+  transition: all 0.2s ease;
+}
+
+#clock:hover,
+#custom-weather:hover,
+#network:hover,
+#pulseaudio:hover,
+#battery:hover,
+#custom-power:hover,
+#tray:hover {
+  background: @surface1;
+  border-color: @overlay0;
+}
+
+/* Logo - mantle - less vibrant */
+#custom-logo {
+  background: @mantle;
+  color: @subtext0;
+  font-size: 18px;
+  padding: 6px 14px 6px 8px;
+  margin: 6px 4px 6px 8px;
+  border: 1px solid @surface0;
+  opacity: 0.85;
+}
+
+/* Weather - less vibrant */
+#custom-weather {
+  background: @surface1;
+  color: @subtext1;
+  font-weight: 600;
+  border: 1px solid @surface2;
+  margin-left: 2px;
+}
+
+/* Media - overlay - more translucent */
+#custom-media {
+  background: alpha(@surface1, 0.5);
+  color: @subtext0;
+  font-style: italic;
+}
+
+/* Clock - less vibrant */
+#clock {
+  background: @surface1;
+  color: @subtext1;
+  font-weight: 700;
+  padding: 6px 16px;
+  border: 1px solid @surface2;
+}
+
+/* Keyboard - transparent */
+#custom-keyboard {
+  background: transparent;
+  border: none;
+  color: @flamingo;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 6px 8px;
+}
+
+/* Timer - less vibrant */
+#custom-timer {
+  background: @surface1;
+  color: @subtext1;
+  font-weight: 600;
+  border: 1px solid @surface2;
+}
+
+/* Pulseaudio - yellow mocha */
+#pulseaudio {
+  background: @yellow;
+  color: @crust;
+  padding: 6px 10px 6px 12px;
+  border: none;
+}
+#pulseaudio.muted {
+  background: @surface1;
+  color: @overlay0;
+}
+
+/* Network - less vibrant */
+#network {
+  background: @surface1;
+  color: @subtext1;
+  padding: 6px 16px 6px 12px;
+  border: 1px solid @surface2;
+}
+#network.disconnected {
+  background: @red;
+  color: @crust;
+}
+
+/* Battery - less vibrant */
+#battery {
+  background: @surface1;
+  color: @subtext1;
+  font-weight: 600;
+  border: 1px solid @surface2;
+}
+#battery.warning {
+  background: @yellow;
+  color: @crust;
+}
+#battery.critical {
+  background: @red;
+  color: @crust;
+  animation: blink 1s linear infinite;
+}
+#battery.charging {
+  background: @green;
+  color: @crust;
+}
+
+@keyframes blink {
+  to { background: @surface1; color: @text; }
+}
+
+/* Tray - mocha */
+#tray {
+  background: alpha(@surface0, 0.85);
+  border: 1px solid @surface1;
+  padding: 6px 8px;
+  margin: 6px 3px;
+}
+#tray > .passive { -gtk-icon-effect: dim; }
+#tray > .needs-attention { -gtk-icon-effect: highlight; background: @red; }
+
+/* Power - less vibrant */
+#custom-power {
+  background: @surface1;
+  color: @subtext1;
+  font-size: 16px;
+  padding: 6px 17px 6px 14px;
+  margin-right: 10px;
+  min-width: 26px;
+  border: 1px solid @surface2;
+}
+#custom-power:hover {
+  background: @pink;
+}
+
+/* Taskbar */
+#taskbar button {
+  background: transparent;
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin: 2px;
+}
+#taskbar button.active {
+  background: @surface1;
+}

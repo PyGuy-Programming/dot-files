@@ -1,0 +1,11 @@
+# Custom categories for wofi - edit this file, one category per line
+# Format: CategoryName: app_id1,app_id2,app_id3
+# app_id = .desktop file without .desktop (e.g. brave-browser, kitty, vesktop, steam, vlc)
+# Use `ls /usr/share/applications/*.desktop` and `ls ~/.local/share/applications/*.desktop` to find names
+
+Work: brave-browser,kitty,vesktop,code
+Media: vlc,mpv,pavucontrol,brave-browser
+Games: steam,com.system76.CosmicAppLibrary,org.gnome.Steam,Geometry Dash,gog_com-Hollow_Knight_1,gog_com-Terraria_1,gog_com-Stardew_Valley_1,Portal 2,Portal
+System: pavucontrol,btop,kitty,swaync,org.gnome.Terminal,com.system76.CosmicSettings
+Development: code,kitty,nvim,jetbrainsd
+All: *
