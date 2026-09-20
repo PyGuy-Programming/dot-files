@@ -20,7 +20,7 @@
         "network",
         "pulseaudio",
         "battery",
-        "custom/power"
+        "group/power"
     ],
     "wlr/taskbar": {
         "format": "{icon}",
@@ -44,8 +44,8 @@
             "7": "",
             "8": "",
             "9": "",
-            "active": "󱓻",
-            "urgent": ""
+            "active": "\udb85\udcfb",
+            "urgent": "\uf06a"
         },
         "persistent_workspaces": {
             "1": [],
@@ -69,8 +69,8 @@
             "7": "",
             "8": "",
             "9": "",
-            "active": "󱓻",
-            "urgent": ""
+            "active": "\udb85\udcfb",
+            "urgent": "\uf06a"
         },
         "persistent_workspaces": {
             "1": [],
@@ -94,7 +94,7 @@
     },
     "clock": {
         "tooltip-format": "{calendar}",
-        "format": "  {:%H:%M  󰸘 %a, %d %b %Y}",
+        "format": "  {:%H:%M  \udb83\ude18 %a, %d %b %Y}",
         "calendar": {
             "iso8601": true
         }
@@ -106,8 +106,8 @@
         "format": "{icon} {0}",
         "format-icons": {
             "standby": " STANDBY",
-            "running": "󰦖 RUNNING",
-            "paused": "󰥕 PAUSE"
+            "running": "\udb82\udd96 RUNNING",
+            "paused": "\udb82\udd55 PAUSE"
         },
         "on-click": "/home/luca/.config/waybar/scripts/waybar_timer new 25 'notify-send \"Session finished\"'",
         "on-click-middle": "/home/luca/.config/waybar/scripts/waybar_timer cancel",
@@ -118,33 +118,33 @@
     "network": {
         "format-wifi": "{icon}",
         "format-icons": [
-            "󰤯",
-            "󰤟",
-            "󰤢",
-            "󰤥",
-            "󰤨"
+            "\udb82\udd2f",
+            "\udb82\udd1f",
+            "\udb82\udd22",
+            "\udb82\udd25",
+            "\udb82\udd28"
         ],
-        "format-ethernet": "󰀂",
-        "format-disconnected": "󰖪",
-        "format-alt": " {bandwidthUpBits} |  {bandwidthDownBits}",
-        "tooltip-format-wifi": "{icon} {essid} Wi-Fi",
-        "tooltip-format-ethernet": "Ethernet",
-        "tooltip-format-disconnected": "Disconnected",
+        "format-ethernet": "\udb80\udc02",
+        "format-disconnected": "\udb81\uddaa",
+        "format-alt": " {bandwidthUpBytes} \u2191  {bandwidthDownBytes} \u2193",
+        "tooltip-format-wifi": "{icon} {essid} \u2014 \u2191 {bandwidthUpBytes} \u2193 {bandwidthDownBytes}",
+        "tooltip-format-ethernet": "Ethernet \u2014 \u2191 {bandwidthUpBytes} \u2193 {bandwidthDownBytes}",
+        "tooltip-format-disconnected": "Disconnected \u2014 no speed",
         "interval": 1,
         "nospacing": 1,
         "on-click": "nm-connection-editor"
     },
     "pulseaudio": {
         "format": "{volume}% {icon}",
-        "format-bluetooth": "󰂰",
+        "format-bluetooth": "\udb80\udcb0",
         "nospacing": 1,
-        "tooltip-format": "Volume : {volume}%",
-        "format-muted": "󰝟",
+        "tooltip-format": "Volume {volume}%",
+        "format-muted": "\udb81\udf5f",
         "format-icons": {
             "headphone": "",
             "default": [
-                "󰖀",
-                "󰕾",
+                "\udb81\udd80",
+                "\udb81\udd7e",
                 ""
             ]
         },
@@ -152,7 +152,7 @@
         "scroll-step": 1
     },
     "custom/logo": {
-        "format": "  ",
+        "format": " \uf32a ",
         "tooltip": false,
         "on-click": "cosmic-launcher",
         "on-click-right": "kitty"
@@ -174,28 +174,28 @@
         "format": "{capacity}% {icon}",
         "format-icons": {
             "charging": [
-                "󰢜",
-                "󰂆",
-                "󰂇",
-                "󰂈",
-                "󰢝",
-                "󰂉",
-                "󰢞",
-                "󰂊",
-                "󰂋",
-                "󰂅"
+                "\udb82\udc9c",
+                "\udb80\udc86",
+                "\udb80\udc87",
+                "\udb80\udc88",
+                "\udb82\udc9d",
+                "\udb80\udc89",
+                "\udb82\udc9e",
+                "\udb80\udc8a",
+                "\udb80\udc8b",
+                "\udb80\udc85"
             ],
             "default": [
-                "󰁺",
-                "󰁻",
-                "󰁼",
-                "󰁽",
-                "󰁾",
-                "󰁿",
-                "󰂀",
-                "󰂁",
-                "󰂂",
-                "󰁹"
+                "\udb80\udc7a",
+                "\udb80\udc7b",
+                "\udb80\udc7c",
+                "\udb80\udc7d",
+                "\udb80\udc7e",
+                "\udb80\udc7f",
+                "\udb80\udc80",
+                "\udb80\udc81",
+                "\udb80\udc82",
+                "\udb80\udc79"
             ]
         },
         "format-full": "",
@@ -204,12 +204,42 @@
             "warning": 20,
             "critical": 10
         },
-        "tooltip": false
+        "tooltip": false,
+        "tooltip-format": "{capacity}% \u2014 {time}"
     },
     "custom/power": {
-        "format": "",
+        "format": "\u23fb",
         "tooltip": false,
-        "on-click": "wlogout --protocol layer-shell -b 3 -c 12 -r 12",
-        "on-click-right": "env XDG_CURRENT_DESKTOP=GNOME gnome-control-center"
+        "on-click": "systemctl poweroff"
+    },
+    "custom/poweroff": {
+        "format": "\udb81\udc25",
+        "tooltip": false,
+        "on-click": "systemctl poweroff"
+    },
+    "custom/reboot": {
+        "format": "\udb81\udf09",
+        "tooltip": false,
+        "on-click": "systemctl reboot"
+    },
+    "custom/logout": {
+        "format": "\udb80\udf43",
+        "tooltip": false,
+        "on-click": "swaymsg exit"
+    },
+    "custom/suspend": {
+        "format": "\udb82\udd04",
+        "tooltip": false,
+        "on-click": "systemctl suspend"
+    },
+    "group/power": {
+        "orientation": "horizontal",
+        "modules": [
+            "custom/power",
+            "custom/suspend",
+            "custom/logout",
+            "custom/reboot",
+            "custom/poweroff"
+        ]
     }
 }
