@@ -1,0 +1,199 @@
+; PEAK — Eww bar — time replaced by date+time on hover, player only if playing, power no duplicate
+(defvar power-reveal false)
+(defvar net-reveal false)
+(defvar popup-hover false)
+(defvar date-reveal false)
+(defpoll network-status :interval "5s" :initial "connected" `nmcli -t -f NAME c show --active 2>/dev/null | head -1 | tr -d '\n' | head -c 10 || echo disconnected`)
+(defpoll network-icon :interval "5s" :initial "󰤨" `/home/luca/.config/eww/scripts/wifi-icon.sh`)
+(defpoll network-speed :interval "2s" :initial "0D 0U" `awk 'NR>2 {rx+=$2; tx+=$10} END {printf "%.1fD %.1fU", rx/1024/1024, tx/1024/1024}' /proc/net/dev 2>/dev/null | head -c 16 || echo "0D 0U"`)
+(defpoll battery :interval "15s" :initial "100" `cat /sys/class/power_supply/BAT0/capacity 2>/dev/null || echo 100`)
+(defpoll volume :interval "1s" :initial "50" `pamixer --get-volume 2>/dev/null || wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | grep -oP '[0-9.]+' | head -1 | awk '{print int($1*100)}' || pactl list sinks 2>/dev/null | grep -m1 "Volume:" | grep -oP '\d+%' | head -1 | tr -d '%' || echo 50`)
+(defpoll volume-icon :interval "1s" :initial "󰕾" `/home/luca/.config/eww/scripts/volume-icon.sh`)
+(defpoll music :interval "2s" :initial "" `playerctl metadata title 2>/dev/null | head -c 30 || echo ""`)
+(defpoll artist :interval "2s" :initial "" `playerctl metadata artist 2>/dev/null | head -c 20 || echo ""`)
+(defpoll music-status :interval "2s" :initial "Stopped" `playerctl status 2>/dev/null || echo Stopped`)
+(defpoll time :interval "1s" :initial "00:00" `date "+%H:%M"`)
+(defpoll date :interval "60s" :initial "01 Jan" `date "+%a %d %b"`)
+
+;; Quick Settings panel variables
+(defvar qs-reveal false)
+(defpoll desktop-empty :interval "2s" :initial "false" `/home/luca/.config/eww/scripts/empty-desktop.sh`)
+(defpoll brightness :interval "2s" :initial "50" `brightnessctl get 2>/dev/null | awk '{max=7500; pct=$1*100/max; print int(pct)}' || echo 50`)
+(defpoll brightness-icon :interval "2s" :initial "󰃟" `/home/luca/.config/eww/scripts/brightness-icon.sh`)
+(defpoll kb-backlight :interval "2s" :initial "0" `cat /sys/class/leds/dell::kbd_backlight/brightness 2>/dev/null || echo 0`)
+(defpoll wifi-state :interval "5s" :initial "enabled" `nmcli radio wifi 2>/dev/null || echo disabled`)
+(defpoll bt-state :interval "5s" :initial "off" `bluetoothctl show 2>/dev/null | grep "Powered:" | awk '{print $2}' || echo off`)
+(defpoll nightlight-state :interval "5s" :initial "off" `pgrep -x gammastep >/dev/null 2>&1 && echo on || echo off`)
+(defpoll dnd-state :interval "5s" :initial "off" `swaync-client -s 2>/dev/null | grep -q '"dnd": true' && echo on || echo off`)
+(defpoll power-profile :interval "10s" :initial "balanced" `system76-power profile 2>/dev/null | grep -oP '(?<=\* )\w+' || echo balanced`)
+
+(defwidget power-hover []
+  (eventbox :onhover "eww update power-reveal=true" :onhoverlost "eww update power-reveal=false"
+    (box :class "power-box" :orientation "h" :spacing 6 :space-evenly false
+      (button :class "power-main" :onclick "systemctl poweroff" "⏻")
+      (revealer :transition "slideright" :reveal power-reveal :duration "350ms"
+        (box :orientation "h" :spacing 1
+          (button :class "power-suspend" :onclick "systemctl suspend" "󰤄")
+          (button :class "power-logout" :onclick "swaymsg exit" "󰍃")
+          (button :class "power-reboot" :onclick "systemctl reboot" "󰜉")
+        ))
+    )))
+
+(defwidget network-hover []
+  (eventbox :onhover "/home/luca/.config/eww/scripts/net-popup-open.sh" :onhoverlost "/home/luca/.config/eww/scripts/net-popup-close.sh" :onclick "nm-connection-editor"
+    (box :class "network" :orientation "h" :spacing 4
+      (label :class "net-icon" :text network-icon)
+    )))
+
+(defwidget net-popup-content []
+  (box :class "net-popup" :orientation "h" :spacing 6
+    (label :class "net-text" :text network-status)
+    (label :class "net-speed" :text network-speed)
+  ))
+
+(defwidget battery-hover []
+  (box :class "battery" :orientation "h" :spacing 6
+    (label :class "bat-icon" :text "󰂄")
+    (label :class "bat-text" :text "${battery}%")
+  ))
+
+(defwidget volume-hover []
+  (eventbox :onclick "pavucontrol" :onrightclick "bash -c 'pamixer --toggle-mute 2>/dev/null || wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle 2>/dev/null || pactl set-sink-mute @DEFAULT_SINK@ toggle 2>/dev/null'" :onscroll "bash -c 'if [ \"{}\" = \"up\" ]; then pamixer --increase 2 2>/dev/null || wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+ 2>/dev/null || pactl set-sink-volume @DEFAULT_SINK@ +2% 2>/dev/null; else pamixer --decrease 2 2>/dev/null || wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%- 2>/dev/null || pactl set-sink-volume @DEFAULT_SINK@ -2% 2>/dev/null; fi'"
+    (box :class "volume" :orientation "h" :spacing 4
+      (label :class "vol-icon" :text volume-icon)
+      (label :class "vol-text" :text "${volume}%")
+    )
+  )
+)
+
+(defwidget player []
+  (revealer :transition "slideright" :reveal {music != "" && music-status == "Playing"} :duration "300ms"
+    (box :class "player" :orientation "h" :spacing 8
+      (label :class "music-icon" :text "")
+      (label :class "music-text" :text music)
+      (label :class "artist-text" :text artist)
+    )))
+
+(defwidget clock-hover []
+  (eventbox :onhover "eww update date-reveal=true" :onhoverlost "eww update date-reveal=false"
+    (box :class "clock" :orientation "h" :halign "center" :valign "center"
+      (label :class "time" :text {date-reveal ? "${date} ${time}" : time})
+    )))
+
+(defwidget bar []
+  (centerbox :class "bar" :orientation "h"
+    (box :halign "start" :orientation "h" :spacing 10
+      (label :class "distro" :text "")
+      (player)
+    )
+    (clock-hover)
+    (box :halign "end" :orientation "h" :spacing 12 :space-evenly false
+      (systray :spacing 6 :icon-size 16)
+      (volume-hover)
+      (network-hover)
+      (battery-hover)
+      (power-hover)
+    )
+  ))
+
+(defwindow bar
+  :monitor 0
+  :geometry (geometry :x "0%" :y "8px" :width "99%" :height "42px" :anchor "top center")
+  :stacking "fg"
+  :exclusive true
+  :focusable false
+  (bar)
+)
+
+(defwindow net-popup
+  :monitor 0
+  :geometry (geometry :x "1680px" :y "0px" :width "170px" :height "28px" :anchor "top left")
+  :stacking "overlay"
+  :exclusive false
+  :focusable false
+  (revealer :transition "slidedown" :reveal net-reveal :duration "300ms"
+    (net-popup-content))
+)
+
+;; Quick Settings panel
+(defwidget qs-slider [label icon value command]
+  (box :class "qs-slider" :orientation "h" :spacing 8 :halign "fill"
+    (label :class "qs-slider-icon" :text icon)
+    (scale :min 0 :max 100 :value {value} :onchange command :class "qs-scale")
+    (label :class "qs-slider-value" :halign "end" :text "${value}%")
+  ))
+
+(defwidget qs-pill [label active command]
+  (button :class "qs-pill ${active ? "active" : ""}" :onclick command
+    (label :text label)
+  ))
+
+(defwidget qs-power-pill [label command]
+  (button :class "qs-power-pill" :onclick command
+    (label :text label)
+  ))
+
+(defwidget quick-settings-content []
+  (box :class "qs-panel" :orientation "v" :spacing 12 :halign "fill" :hexpand true
+    ;; Brightness
+    (qs-slider :label "Brightness" :icon "󰃠" :value brightness :command "brightnessctl set ${1}% 2>/dev/null")
+    ;; Volume (using the bar's volume variable)
+    (qs-slider :label "Volume" :icon volume-icon :value volume :command "pamixer --set-volume ${1} 2>/dev/null || wpctl set-volume @DEFAULT_AUDIO_SINK@ ${1}% 2>/dev/null")
+    ;; Keyboard backlight
+    (box :class "qs-row" :orientation "h" :spacing 8 :halign "fill"
+      (label :class "qs-row-label" :text "󰌌  Keyboard")
+      (box :class "qs-kb-pills" :orientation "h" :spacing 4
+        (button :class "qs-pill ${kb-backlight == '0' ? 'active' : ''}" :onclick "brightnessctl --device dell::kbd_backlight set 0" (label :text "Off"))
+        (button :class "qs-pill ${kb-backlight == '1' ? 'active' : ''}" :onclick "brightnessctl --device dell::kbd_backlight set 1" (label :text "50%"))
+        (button :class "qs-pill ${kb-backlight == '2' ? 'active' : ''}" :onclick "brightnessctl --device dell::kbd_backlight set 2" (label :text "100%"))
+      ))
+    ;; Separator
+    (box :class "qs-separator" :halign "fill")
+    ;; Toggle pills row 1
+    (box :class "qs-row" :orientation "h" :spacing 8 :halign "fill"
+      (qs-pill :label "󰤨  WiFi" :active {wifi-state == "enabled"} :command "/home/luca/.config/eww/scripts/wifi-toggle.sh")
+      (qs-pill :label "󰂯  Bluetooth" :active {bt-state == "yes"} :command "/home/luca/.config/eww/scripts/bt-toggle.sh")
+    )
+    ;; Toggle pills row 2
+    (box :class "qs-row" :orientation "h" :spacing 8 :halign "fill"
+      (qs-pill :label "󰖨  Night Light" :active {nightlight-state == "on"} :command "/home/luca/.config/eww/scripts/nightlight-toggle.sh")
+      (qs-pill :label "󰂞  DND" :active {dnd-state == "on"} :command "swaync-client -t 2>/dev/null")
+    )
+    ;; Separator
+    (box :class "qs-separator" :halign "fill")
+    ;; Power profile
+    (box :class "qs-row" :orientation "h" :spacing 6 :halign "fill"
+      (label :class "qs-row-label" :text "⏻  Power")
+      (box :class "qs-power-pills" :orientation "h" :spacing 4
+        (qs-power-pill :label "󰓅  Perf" :command "system76-power performance 2>/dev/null")
+        (qs-power-pill :label "󰾡  Balanced" :command "system76-power balanced 2>/dev/null")
+        (qs-power-pill :label "󰍹  Battery" :command "system76-power battery 2>/dev/null")
+      ))
+  ))
+
+(defwidget qs-trigger []
+  (eventbox :onhover "eww update qs-reveal=true" :onhoverlost "eww update qs-reveal=false"
+    (box :class "qs-trigger" :halign "end" :valign "fill" :hexpand true :vexpand true
+      (label :css "min-width: 40px; background-color: rgba(0,0,0,0.01);"))))
+
+(defwidget quick-settings-content-wrapper []
+  (eventbox :onhoverlost "eww update qs-reveal=false"
+    (quick-settings-content)))
+
+(defwidget quick-settings []
+  (box :class "qs-container" :halign "end" :valign "fill" :hexpand false :vexpand true
+    (revealer :transition "slideleft" :reveal qs-reveal :duration "300ms"
+      (quick-settings-content-wrapper))))
+
+(defwidget qs-combined []
+  (box :halign "end" :orientation "h" :valign "fill" :vexpand true
+    (quick-settings)
+    (qs-trigger)))
+
+(defwindow qs-panel
+  :monitor 0
+  :geometry (geometry :x "0px" :y "0px" :width "320px" :height "100%" :anchor "top right")
+  :stacking "overlay"
+  :exclusive false
+  :focusable false
+  (qs-combined))

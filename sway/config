@@ -1,35 +1,26 @@
-# Catppuccin Mocha - Sway config for luca
-# Palette: https://github.com/catppuccin/i3/blob/main/themes/catppuccin-mocha
-# Kitty uses Catppuccin-Macchiato, Sway uses Mocha for consistency with wofi (#1e1e2e base)
-# Read `man 5 sway` for reference.
+# Gruvbox dark - Sway config for luca
+# Palette: https://github.com/morhetz/gruvbox
+# Kitty uses the same gruvbox dark palette
 
-# ── Catppuccin Mocha Palette ──────────────────────────────────────
-set $rosewater #f5e0dc
-set $flamingo #f2cdcd
-set $pink #f5c2e7
-set $mauve #cba6f7
-set $red #f38ba8
-set $maroon #eba0ac
-set $peach #fab387
-set $yellow #f9e2af
-set $green #a6e3a1
-set $teal #94e2d5
-set $sky #89dceb
-set $sapphire #74c7ec
-set $blue #89b4fa
-set $lavender #b4befe
-set $text #cdd6f4
-set $subtext1 #bac2de
-set $subtext0 #a6adc8
-set $overlay2 #9399b2
-set $overlay1 #7f849c
-set $overlay0 #6c7086
-set $surface2 #585b70
-set $surface1 #45475a
-set $surface0 #313244
-set $base #1e1e2e
-set $mantle #181825
-set $crust #11111b
+# ── Gruvbox dark palette ─────────────────────────────────────────
+set $bg0 #282828
+set $bg1 #3c3836
+set $bg2 #504945
+set $bg3 #665c54
+set $bg4 #7c6f64
+set $fg0 #fbf1c7
+set $fg1 #ebdbb2
+set $fg2 #d5c4a1
+set $fg3 #bdae93
+set $fg4 #a89984
+set $gray #928374
+set $red #fb4934
+set $green #b8bb26
+set $yellow #fabd2f
+set $blue #83a598
+set $purple #d3869b
+set $aqua #8ec07c
+set $orange #fe8019
 
 ### Variables
 set $mod Mod4
@@ -39,7 +30,7 @@ set $up k
 set $right l
 set $term kitty
 set $browser brave-browser
-set $menu wofi --show drun
+set $menu fuzzel
 
 include /etc/sway/config-vars.d/*
 
@@ -67,31 +58,29 @@ blur_brightness 0.95
 blur_contrast 0.95
 blur_saturation 1.1
 layer_effects "waybar" blur enable; shadows enable; corner_radius 12
-layer_effects "wofi" blur enable; shadows enable; corner_radius 12
+layer_effects "fuzzel" blur enable; shadows enable; corner_radius 12
 layer_effects "swaync-notification-window" blur enable; blur_ignore_transparent enable; shadows enable; corner_radius 10
 layer_effects "swaync-control-center" blur enable; blur_ignore_transparent enable; shadows enable; corner_radius 10
+layer_effects "quick-settings" blur enable; blur_ignore_transparent enable; shadows enable; corner_radius 12
+layer_effects "qs-trigger" blur enable; corner_radius 12
 # shadows
 shadows enable
 shadow_blur_radius 15
-shadow_color #1e1e2eCC
-# window open/close animations - swayfx 0.4 (PPA dariuszd 2024-06-21) does NOT support animations yet
-# animations require swayfx >=0.5 built from source (PR #487). Uncomment after building latest:
-# animations enable
-# animation_duration_ms 250
-# animation_window_ps enable
+shadow_color #282828CC
+# window open/close animations - swayfx 0.6 (built from source Sep 2026, PR #487)
+animation_duration_ms 150
 
-# window colors (from catppuccin/i3 README)
+# window colors (gruvbox dark)
 #    target                 title      bg     text    indicator   border
-client.focused              $lavender $base  $text   $rosewater  $lavender
-client.focused_inactive     $overlay0 $base  $text   $rosewater  $overlay0
-client.unfocused            $overlay0 $base  $text   $rosewater  $overlay0
-client.urgent               $peach    $base  $peach  $overlay0   $peach
-client.placeholder          $overlay0 $base  $text   $overlay0   $overlay0
-client.background           $base
+client.focused              $gray      $bg0   $fg0    $gray       $gray
+client.focused_inactive     $bg2       $bg0   $fg1    $gray       $bg2
+client.unfocused            $bg1       $bg0   $fg2    $gray       $bg1
+client.urgent               $red       $bg0   $red    $bg1        $red
+client.placeholder          $bg2       $bg0   $fg1    $bg2        $bg2
+client.background           $bg0
 
 # blur for other apps - make windows slightly transparent so swayfx blur shows behind (kitty already 0.75 via kitty.conf)
 for_window [app_id=".*"] opacity 0.92
-for_window [class=".*"] opacity 0.92
 for_window [app_id="brave-browser"] opacity 0.92
 # disable blur on maximized (floating) Win+m windows - opaque, no frosted background
 for_window [floating] blur disable
@@ -101,8 +90,8 @@ for_window [floating] opacity 1
 
 ### Output
 # keep your wallpaper, fallback to mocha solid color
-output * bg #1e1e2e solid_color
-output * bg /home/luca/Downloads/rainbow-cat.png fill
+output * bg #282828 solid_color
+output * bg /home/luca/Downloads/gruv-portal-cake.png fill
 # Example: output HDMI-A-1 resolution 1920x1080 position 1920,0
 
 ### Idle - hyprshade OLED mimic: dim + blue-light + suspend
@@ -111,11 +100,11 @@ output * bg /home/luca/Downloads/rainbow-cat.png fill
 # burn-in prevention: dim screen after 5min, then suspend after 15min
 exec swayidle -w \
          timeout 300 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
-         timeout 900 'swaylock -f --color 1e1e2e --inside-color 1e1e2e --ring-color cba6f7 --key-hl-color f5c2e7 --line-color 00000000 --separator-color 00000000 --text-color cdd6f4 --inside-ver-color 89b4fa --ring-ver-color 89b4fa --inside-wrong-color f38ba8 --ring-wrong-color f38ba8 --inside-clear-color fab387 --ring-clear-color fab387 --bs-hl-color f38ba8 & systemctl suspend' \
-         before-sleep 'swaylock -f --color 1e1e2e --inside-color 1e1e2e --ring-color cba6f7 --key-hl-color f5c2e7 --line-color 00000000 --separator-color 00000000 --text-color cdd6f4 --inside-ver-color 89b4fa --ring-ver-color 89b4fa --inside-wrong-color f38ba8 --ring-wrong-color f38ba8 --inside-clear-color fab387 --ring-clear-color fab387 --bs-hl-color f38ba8'
+         timeout 900 'swaylock -f --color 282828 --inside-color 282828 --ring-color fe8019 --key-hl-color fabd2f --line-color 00000000 --separator-color 00000000 --text-color ebdbb2 --inside-ver-color 83a598 --ring-ver-color 83a598 --inside-wrong-color fb4934 --ring-wrong-color fb4934 --inside-clear-color b8bb26 --ring-clear-color b8bb26 --bs-hl-color fb4934 & systemctl suspend' \
+         before-sleep 'swaylock -f --color 282828 --inside-color 282828 --ring-color fe8019 --key-hl-color fabd2f --line-color 00000000 --separator-color 00000000 --text-color ebdbb2 --inside-ver-color 83a598 --ring-ver-color 83a598 --inside-wrong-color fb4934 --ring-wrong-color fb4934 --inside-clear-color b8bb26 --ring-clear-color b8bb26 --bs-hl-color fb4934'
 
 # Lid close - lock + suspend (requires swayidle before-sleep already locks, this ensures immediate)
-bindswitch lid:on exec swaylock -f --color 1e1e2e --inside-color 1e1e2e --ring-color cba6f7 --key-hl-color f5c2e7 --line-color 00000000 --separator-color 00000000 --text-color cdd6f4 --inside-ver-color 89b4fa --ring-ver-color 89b4fa --inside-wrong-color f38ba8 --ring-wrong-color f38ba8 --inside-clear-color fab387 --ring-clear-color fab387 --bs-hl-color f38ba8 & systemctl suspend
+bindswitch lid:on exec swaylock -f --color 282828 --inside-color 282828 --ring-color fe8019 --key-hl-color fabd2f --line-color 00000000 --separator-color 00000000 --text-color ebdbb2 --inside-ver-color 83a598 --ring-ver-color 83a598 --inside-wrong-color fb4934 --ring-wrong-color fb4934 --inside-clear-color b8bb26 --ring-clear-color b8bb26 --bs-hl-color fb4934 & systemctl suspend
 
 ### Focus - Hyprland-like dwindle (halve again + cursor side)
 focus_follows_mouse yes
@@ -127,6 +116,7 @@ exec $HOME/.local/bin/autotiling
 ### Autostart - notifications (swaync) - Catppuccin Mocha + XDG autostart
 exec swaync
 exec swaync-client --reload-config 2>/dev/null; swaync-client --reload-css 2>/dev/null
+exec sh -c '$HOME/.local/bin/eww daemon --force-wayland; sleep 1; $HOME/.local/bin/eww open bar'
 exec dex --autostart --environment sway
 # Fix mic not detected - card was on output:analog-stereo (no input), need duplex
 exec pactl set-card-profile alsa_card.pci-0000_00_1f.3 output:analog-stereo+input:analog-stereo
@@ -134,7 +124,7 @@ exec pactl set-source-mute alsa_input.pci-0000_00_1f.3.analog-stereo false
 exec pactl set-source-volume alsa_input.pci-0000_00_1f.3.analog-stereo 80%
 
 ### Cursor - Catppuccin Mocha Dark (matches sway mocha)
-seat seat0 xcursor_theme catppuccin-mocha-dark-cursors 24
+seat seat0 xcursor_theme phinger-cursors-dark 24
 
 ### Input ──────────────────────────────────────────────────────────
 # QWERTZ + Trackpad richtig rum
@@ -146,7 +136,7 @@ input type:keyboard {
 input type:touchpad {
     natural_scroll enabled
     tap enabled
-    dwt enabled
+    dwt disabled
     middle_emulation enabled
 }
 
@@ -176,14 +166,14 @@ input "2:8:AlpsPS/2_ALPS_DualPoint_TouchPad" {
     # Vesktop (discord) - Win+v
     bindsym $mod+v exec vesktop
 
-    # Kill service via wofi + sudo pkill - Win+p (INSECURE - see script)
-    bindsym $mod+p exec ~/.local/bin/wofi-kill.sh
+    # Kill service via fuzzel + sudo pkill - Win+p (INSECURE - see script)
+    bindsym $mod+p exec ~/.local/bin/fuzzel-kill.sh
 
     # Kill focused window
     bindsym $mod+q kill
 
     # Lock screen - Win+Esc (Catppuccin Mocha)
-    bindsym $mod+Escape exec swaylock -f --color 1e1e2e --inside-color 1e1e2e --ring-color cba6f7 --key-hl-color f5c2e7 --line-color 00000000 --separator-color 00000000 --text-color cdd6f4 --inside-ver-color 89b4fa --ring-ver-color 89b4fa --inside-wrong-color f38ba8 --ring-wrong-color f38ba8 --inside-clear-color fab387 --ring-clear-color fab387 --bs-hl-color f38ba8
+    bindsym $mod+Escape exec swaylock -f --color 282828 --inside-color 282828 --ring-color fe8019 --key-hl-color fabd2f --line-color 00000000 --separator-color 00000000 --text-color ebdbb2 --inside-ver-color 83a598 --ring-ver-color 83a598 --inside-wrong-color fb4934 --ring-wrong-color fb4934 --inside-clear-color b8bb26 --ring-clear-color b8bb26 --bs-hl-color fb4934
 
     # Notifications - swaync (installed, now themed mocha)
     bindsym $mod+n exec swaync-client -t -sw
@@ -201,11 +191,13 @@ input "2:8:AlpsPS/2_ALPS_DualPoint_TouchPad" {
     bindsym --release Super_R exec $menu
 
     # Launcher - categorized (custom categories)
-    bindsym $mod+c exec /home/luca/.local/bin/wofi-categorized.sh
-    # Fallback launcher on Mod+d (like rofi)
+    bindsym $mod+c exec /home/luca/.local/bin/fuzzel-categorized.sh
+    # Fallback launcher on Mod+d (like fuzzel)
     bindsym $mod+d exec $menu
     # Plain drun fallback (uncategorized) via Shift
-    bindsym $mod+Shift+d exec wofi --show drun --prompt "Apps"
+    bindsym $mod+Shift+d exec fuzzel --prompt "Apps: "
+    # Win+x - fuzzel bash input, no suggestions, no terminal
+    bindsym $mod+x exec ~/.local/bin/fuzzel-run.sh
 
     # Drag floating windows
     floating_modifier $mod normal
@@ -292,29 +284,34 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
-# Media / volume (optional, mocha friendly)
-bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
-bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
-bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+# Media / volume (optional, mocha friendly) — with tick after change
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5% && paplay /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5% && paplay /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga
+bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle && paplay /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga
+bindsym XF86AudioMicMute exec pamixer --default-source --toggle-mute 2>/dev/null || wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle 2>/dev/null; paplay /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga; notify-send -a sway "Mic" "$(pamixer --default-source --get-mute 2>/dev/null | grep -q true && echo muted || echo unmuted)"
 bindsym XF86MonBrightnessUp exec brightnessctl set +5%
 bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
+bindsym $mod+period exec /home/luca/.config/eww/scripts/qs-toggle.sh
 
-# ── Bar (swaybar) - kept for fallback, you use waybar ───────────
-bar {
-    swaybar_command waybar
-    position top
-    # Catppuccin Mocha bar colors (for swaybar if waybar not running)
-    colors {
-        background $base
-        statusline $text
-        focused_statusline $text
-        focused_separator $base
-
-        focused_workspace  $base $mauve $crust
-        active_workspace   $base $surface2 $text
-        inactive_workspace $base $base $text
-        urgent_workspace   $base $red $crust
-    }
-}
+# ── Bar (eww) - eww is the bar
+# bar {
+#     swaybar_command waybar
+#     position top
+#     # Catppuccin Mocha bar colors (for swaybar if waybar not running)
+#     colors {
+#         background $base
+#         statusline $text
+#         focused_statusline $text
+#         focused_separator $base
+# 
+#         focused_workspace  $base $mauve $crust
+#         active_workspace   $base $surface2 $text
+#         inactive_workspace $base $base $text
+#         urgent_workspace   $base $red $crust
+#     }
+# }
 
 include /etc/sway/config.d/*
+
+animation_easing quad
+
