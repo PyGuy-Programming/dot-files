@@ -62,7 +62,6 @@ layer_effects "fuzzel" blur enable; shadows enable; corner_radius 12
 layer_effects "swaync-notification-window" blur enable; blur_ignore_transparent enable; shadows enable; corner_radius 10
 layer_effects "swaync-control-center" blur enable; blur_ignore_transparent enable; shadows enable; corner_radius 10
 layer_effects "quick-settings" blur enable; blur_ignore_transparent enable; shadows enable; corner_radius 12
-layer_effects "qs-trigger" blur enable; corner_radius 12
 # shadows
 shadows enable
 shadow_blur_radius 15
@@ -116,7 +115,7 @@ exec $HOME/.local/bin/autotiling
 ### Autostart - notifications (swaync) - Catppuccin Mocha + XDG autostart
 exec swaync
 exec swaync-client --reload-config 2>/dev/null; swaync-client --reload-css 2>/dev/null
-exec sh -c '$HOME/.local/bin/eww daemon --force-wayland; sleep 1; $HOME/.local/bin/eww open bar'
+exec sh -c 'export PATH="$HOME/.local/share/nvm/v24.18.0/bin:$PATH"; export GI_TYPELIB_PATH="/usr/local/lib/x86_64-linux-gnu/girepository-1.0"; export LD_LIBRARY_PATH="/usr/local/lib/x86_64-linux-gnu"; exec ags run'
 exec dex --autostart --environment sway
 # Fix mic not detected - card was on output:analog-stereo (no input), need duplex
 exec pactl set-card-profile alsa_card.pci-0000_00_1f.3 output:analog-stereo+input:analog-stereo
@@ -291,9 +290,9 @@ bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle && paplay /
 bindsym XF86AudioMicMute exec pamixer --default-source --toggle-mute 2>/dev/null || wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle 2>/dev/null; paplay /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga; notify-send -a sway "Mic" "$(pamixer --default-source --get-mute 2>/dev/null | grep -q true && echo muted || echo unmuted)"
 bindsym XF86MonBrightnessUp exec brightnessctl set +5%
 bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
-bindsym $mod+period exec /home/luca/.config/eww/scripts/qs-toggle.sh
+bindsym $mod+period exec ags request qs-toggle
 
-# ── Bar (eww) - eww is the bar
+# ── Bar (ags) - ags is the bar
 # bar {
 #     swaybar_command waybar
 #     position top

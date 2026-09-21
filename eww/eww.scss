@@ -1,4 +1,7 @@
-* { all: unset; font-family: "CaskaydiaCove Nerd Font", sans-serif; }
+* {
+  all: unset;
+  font-family: "CaskaydiaCove Nerd Font", sans-serif;
+}
 .bar { background-color: rgba(40,40,40,0.88); border: 2px solid #928374; border-radius: 12px; padding: 2px 4px 2px 8px; }
 .power-box, .network, .battery, .player, .clock { background-color: #3c3836; border-radius: 8px; padding: 2px 6px; }
 .power-main { color: #fe8019; font-size: 18px; }
@@ -26,60 +29,74 @@
 .music-text { color: #ebdbb2; font-size: 11px; }
 .artist-text { color: #a89984; font-size: 10px; }
 
-// Quick Settings panel
-.qs-trigger { background-color: transparent; min-width: 15px; }
-.qs-container { background-color: transparent; }
+// Quick Settings panel — Gruvbox dark
+$qs-bg: rgba(40,40,40,0.95);
+$qs-bg1: #3c3836;
+$qs-bg2: #504945;
+$qs-fg: #ebdbb2;
+$qs-gray: #a89984;
+$qs-dark: #282828;
+$qs-orange: #fe8019;
+$qs-yellow: #fabd2f;
+$qs-green: #b8bb26;
+$qs-aqua: #8ec07c;
+$qs-blue: #83a598;
+.qs-container { background-color: rgba(0,0,0,0); }
 .qs-panel {
-  background-color: rgba(40,40,40,0.92);
-  border-left: 2px solid #928374;
-  border-radius: 12px 0 0 12px;
-  padding: 16px 14px;
-  margin: 8px 0;
-  min-height: 200px;
+  background-color: $qs-bg;
+  border: 1px solid $qs-bg2;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  padding: 6px 8px;
+  margin: 0 0 64px 0;
 }
 .qs-slider {
-  background-color: #3c3836;
-  border-radius: 10px;
-  padding: 8px 12px;
+  background-color: $qs-bg1;
+  border: 1px solid $qs-bg2;
+  border-radius: 6px;
+  padding: 1px 6px;
 }
-.qs-slider-icon { color: #83a598; font-size: 16px; min-width: 24px; }
-.qs-slider-value { color: #ebdbb2; font-size: 11px; min-width: 36px; }
+.qs-slider-icon { color: $qs-yellow; font-size: 10px; min-width: 13px; }
+.qs-slider-value { color: $qs-fg; font-size: 9px; min-width: 26px; }
 .qs-scale {
-  color: #83a598;
-  trough { background-color: #504945; border-radius: 4px; min-height: 6px; }
-  highlight { background-color: #83a598; border-radius: 4px; min-height: 6px; }
-  slider { background-color: #ebdbb2; border-radius: 50%; min-width: 14px; min-height: 14px; }
+  color: $qs-orange;
+  trough { background-color: $qs-bg2; border-radius: 3px; min-height: 3px; }
+  highlight { background-color: $qs-orange; border-radius: 3px; min-height: 3px; }
+  slider { background-color: $qs-fg; border-radius: 50%; min-width: 7px; min-height: 7px; }
 }
 .qs-row {
-  background-color: #3c3836;
-  border-radius: 10px;
-  padding: 6px 12px;
+  background-color: $qs-bg1;
+  border: 1px solid $qs-bg2;
+  border-radius: 6px;
+  padding: 2px 6px;
 }
-.qs-row-label { color: #ebdbb2; font-size: 12px; min-width: 80px; }
+.qs-row-label { color: $qs-fg; font-size: 9px; min-width: 44px; }
 .qs-pill {
-  background-color: #504945;
-  color: #a89984;
-  border-radius: 8px;
-  padding: 4px 10px;
-  font-size: 11px;
+  background-color: $qs-bg2;
+  color: $qs-gray;
+  border-radius: 5px;
+  padding: 1px 5px;
+  font-size: 9px;
   transition: all 200ms ease;
 }
-.qs-pill:hover { background-color: #665c54; }
+.qs-pill:hover { background-color: #665c54; color: $qs-fg; }
 .qs-pill.active {
-  background-color: #83a598;
-  color: #282828;
+  background-color: $qs-orange;
+  color: $qs-dark;
 }
 .qs-power-pill {
-  background-color: #504945;
-  color: #a89984;
-  border-radius: 8px;
-  padding: 4px 10px;
-  font-size: 11px;
+  background-color: $qs-bg2;
+  color: $qs-gray;
+  border-radius: 5px;
+  padding: 1px 5px;
+  font-size: 9px;
   transition: all 200ms ease;
 }
-.qs-power-pill:hover { background-color: #665c54; }
+.qs-power-pill:hover { background-color: #665c54; color: $qs-fg; }
 .qs-separator {
-  background-color: #504945;
+  background-color: transparent;
+  border-top: 1px solid $qs-bg2;
   min-height: 1px;
-  margin: 2px 0;
+  margin: 2px 6px;
 }
+.qs-trigger { background-color: rgba(255,255,255,0.01); min-width: 5px; }

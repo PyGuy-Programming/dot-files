@@ -1,0 +1,310 @@
+// Quick Settings panel — Gruvbox dark
+* {
+  all: unset;
+  font-family: "CaskaydiaCove Nerd Font", sans-serif;
+}
+
+$qs-bg: rgba(40, 40, 40, 0.95);
+$qs-bg1: #3c3836;
+$qs-bg2: #504945;
+$qs-fg: #ebdbb2;
+$qs-gray: #a89984;
+$qs-dark: #282828;
+$qs-orange: #fe8019;
+$qs-yellow: #fabd2f;
+
+window#quick-settings,
+window#qs-trigger {
+  background: transparent;
+}
+
+.qs-container {
+  background: transparent;
+}
+
+.qs-panel {
+  background-color: $qs-bg;
+  border: 1px solid $qs-bg2;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  padding: 6px 8px;
+  margin: 0 0 64px 0;
+  min-width: 160px;
+}
+
+.qs-slider {
+  background-color: $qs-bg1;
+  border: 1px solid $qs-bg2;
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+
+.qs-slider-icon {
+  color: $qs-yellow;
+  font-size: 10px;
+  min-width: 13px;
+}
+
+.qs-slider-value {
+  color: $qs-fg;
+  font-size: 9px;
+  min-width: 26px;
+}
+
+.qs-scale {
+  color: $qs-orange;
+}
+
+.qs-scale trough {
+  background-color: $qs-bg2;
+  border-radius: 3px;
+  min-height: 3px;
+}
+
+.qs-scale highlight {
+  background-color: $qs-orange;
+  border-radius: 3px;
+  min-height: 3px;
+}
+
+.qs-scale slider {
+  background-color: $qs-fg;
+  border-radius: 50%;
+  min-width: 7px;
+  min-height: 7px;
+}
+
+.qs-row {
+  background-color: $qs-bg1;
+  border: 1px solid $qs-bg2;
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+
+.qs-row-label {
+  color: $qs-fg;
+  font-size: 9px;
+  min-width: 44px;
+}
+
+.qs-pill {
+  background-color: $qs-bg2;
+  color: $qs-gray;
+  border-radius: 5px;
+  padding: 1px 5px;
+  font-size: 9px;
+  transition: all 200ms ease;
+}
+
+.qs-pill:hover {
+  background-color: #665c54;
+  color: $qs-fg;
+}
+
+.qs-pill.active {
+  background-color: $qs-orange;
+  color: $qs-dark;
+}
+
+.qs-power-pill {
+  background-color: $qs-bg2;
+  color: $qs-gray;
+  border-radius: 5px;
+  padding: 1px 5px;
+  font-size: 9px;
+  transition: all 200ms ease;
+}
+
+.qs-power-pill:hover {
+  background-color: #665c54;
+  color: $qs-fg;
+}
+
+.qs-power-pill.active {
+  background-color: $qs-orange;
+  color: $qs-dark;
+}
+
+.qs-separator {
+  background-color: transparent;
+  border-top: 1px solid $qs-bg2;
+  min-height: 1px;
+  margin: 2px 6px;
+}
+
+.qs-trigger {
+  background-color: rgba(255, 255, 255, 0.01);
+  min-width: 5px;
+}
+
+// ---------------------------------------------------------------------------
+// Bar — Gruvbox dark
+// ---------------------------------------------------------------------------
+$bar-bg: rgba(40, 40, 40, 0.88);
+$bar-border: #928374;
+$bar-bg1: #3c3836;
+$bar-fg: #ebdbb2;
+$bar-gray: #a89984;
+
+window#bar {
+  background: transparent;
+}
+
+.bar {
+  background-color: $bar-bg;
+  border: 2px solid $bar-border;
+  border-radius: 12px;
+  padding: 2px 4px 2px 8px;
+  font-weight: normal;
+}
+
+.bar button {
+  transition: all 200ms ease;
+}
+
+.power-box,
+.network,
+.battery,
+.player,
+.clock {
+  background-color: $bar-bg1;
+  border-radius: 8px;
+  padding: 2px 6px;
+}
+
+.power-main {
+  color: #fe8019;
+  font-size: 18px;
+}
+
+.power-main:hover {
+  color: #fabd2f;
+}
+
+.power-suspend,
+.power-logout,
+.power-reboot {
+  font-size: 16px;
+  padding: 2px 10px;
+}
+
+.power-suspend {
+  color: #8ec07c;
+}
+
+.power-logout {
+  color: #83a598;
+}
+
+.power-reboot {
+  color: #fabd2f;
+}
+
+.power-suspend:hover,
+.power-logout:hover,
+.power-reboot:hover {
+  background-color: #504945;
+}
+
+.net-icon {
+  color: #83a598;
+  font-size: 16px;
+}
+
+.network {
+  padding: 2px 14px 2px 6px;
+}
+
+.net-text {
+  color: $bar-fg;
+  font-size: 9px;
+}
+
+.net-speed {
+  color: $bar-gray;
+  font-size: 9px;
+}
+
+.volume {
+  background-color: $bar-bg1;
+  border-radius: 8px;
+  padding: 2px 6px;
+}
+
+.vol-btn {
+  background: transparent;
+  padding: 0;
+}
+
+.vol-icon {
+  color: #83a598;
+  font-size: 16px;
+}
+
+.vol-text {
+  color: $bar-fg;
+  font-size: 11px;
+}
+
+.bat-icon {
+  color: #b8bb26;
+  font-size: 16px;
+}
+
+.bat-text {
+  color: $bar-fg;
+  font-size: 11px;
+}
+
+.battery {
+  padding: 2px 12px 2px 6px;
+  border-radius: 8px;
+  background-color: $bar-bg1;
+}
+
+.distro {
+  color: #fe8019;
+  font-size: 18px;
+}
+
+.time {
+  color: $bar-fg;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.date {
+  color: $bar-gray;
+  font-size: 11px;
+}
+
+.music-icon {
+  color: #83a598;
+  font-size: 14px;
+}
+
+.music-text {
+  color: $bar-fg;
+  font-size: 11px;
+}
+
+.artist-text {
+  color: $bar-gray;
+  font-size: 10px;
+}
+
+.tray {
+  background-color: $bar-bg1;
+  border-radius: 8px;
+  padding: 2px 6px;
+}
+
+.tray-btn {
+  padding: 0 2px;
+  border-radius: 6px;
+  transition: all 200ms ease;
+}
+
+.tray-btn:hover {
+  background-color: #504945;
+}

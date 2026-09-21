@@ -3,6 +3,7 @@
 (defvar net-reveal false)
 (defvar popup-hover false)
 (defvar date-reveal false)
+(defvar qs-reveal false)
 (defpoll network-status :interval "5s" :initial "connected" `nmcli -t -f NAME c show --active 2>/dev/null | head -1 | tr -d '\n' | head -c 10 || echo disconnected`)
 (defpoll network-icon :interval "5s" :initial "󰤨" `/home/luca/.config/eww/scripts/wifi-icon.sh`)
 (defpoll network-speed :interval "2s" :initial "0D 0U" `awk 'NR>2 {rx+=$2; tx+=$10} END {printf "%.1fD %.1fU", rx/1024/1024, tx/1024/1024}' /proc/net/dev 2>/dev/null | head -c 16 || echo "0D 0U"`)
@@ -16,7 +17,6 @@
 (defpoll date :interval "60s" :initial "01 Jan" `date "+%a %d %b"`)
 
 ;; Quick Settings panel variables
-(defvar qs-reveal false)
 (defpoll desktop-empty :interval "2s" :initial "false" `/home/luca/.config/eww/scripts/empty-desktop.sh`)
 (defpoll brightness :interval "2s" :initial "50" `brightnessctl get 2>/dev/null | awk '{max=7500; pct=$1*100/max; print int(pct)}' || echo 50`)
 (defpoll brightness-icon :interval "2s" :initial "󰃟" `/home/luca/.config/eww/scripts/brightness-icon.sh`)
@@ -24,7 +24,7 @@
 (defpoll wifi-state :interval "5s" :initial "enabled" `nmcli radio wifi 2>/dev/null || echo disabled`)
 (defpoll bt-state :interval "5s" :initial "off" `bluetoothctl show 2>/dev/null | grep "Powered:" | awk '{print $2}' || echo off`)
 (defpoll nightlight-state :interval "5s" :initial "off" `pgrep -x gammastep >/dev/null 2>&1 && echo on || echo off`)
-(defpoll dnd-state :interval "5s" :initial "off" `swaync-client -s 2>/dev/null | grep -q '"dnd": true' && echo on || echo off`)
+(defpoll dnd-state :interval "5s" :initial "off" `swaync-client -D 2>/dev/null | grep -q true && echo on || echo off`)
 (defpoll power-profile :interval "10s" :initial "balanced" `system76-power profile 2>/dev/null | grep -oP '(?<=\* )\w+' || echo balanced`)
 
 (defwidget power-hover []
@@ -129,16 +129,16 @@
   ))
 
 (defwidget qs-power-pill [label command]
-  (button :class "qs-power-pill" :onclick command
+  (button :class "qs-power-pill" :onclick "bash -c '${command}'"
     (label :text label)
   ))
 
 (defwidget quick-settings-content []
-  (box :class "qs-panel" :orientation "v" :spacing 12 :halign "fill" :hexpand true
+  (box :class "qs-panel" :orientation "v" :spacing 6 :valign "start" :halign "fill" :hexpand true
     ;; Brightness
-    (qs-slider :label "Brightness" :icon "󰃠" :value brightness :command "brightnessctl set ${1}% 2>/dev/null")
+    (qs-slider :label "Brightness" :icon "󰃠" :value brightness :command "brightnessctl set {}% 2>/dev/null")
     ;; Volume (using the bar's volume variable)
-    (qs-slider :label "Volume" :icon volume-icon :value volume :command "pamixer --set-volume ${1} 2>/dev/null || wpctl set-volume @DEFAULT_AUDIO_SINK@ ${1}% 2>/dev/null")
+    (qs-slider :label "Volume" :icon volume-icon :value volume :command "pamixer --set-volume {} 2>/dev/null || wpctl set-volume @DEFAULT_AUDIO_SINK@ {}% 2>/dev/null")
     ;; Keyboard backlight
     (box :class "qs-row" :orientation "h" :spacing 8 :halign "fill"
       (label :class "qs-row-label" :text "󰌌  Keyboard")
@@ -157,7 +157,7 @@
     ;; Toggle pills row 2
     (box :class "qs-row" :orientation "h" :spacing 8 :halign "fill"
       (qs-pill :label "󰖨  Night Light" :active {nightlight-state == "on"} :command "/home/luca/.config/eww/scripts/nightlight-toggle.sh")
-      (qs-pill :label "󰂞  DND" :active {dnd-state == "on"} :command "swaync-client -t 2>/dev/null")
+      (qs-pill :label "󰂞  DND" :active {dnd-state == "on"} :command "/home/luca/.config/eww/scripts/dnd-toggle.sh")
     )
     ;; Separator
     (box :class "qs-separator" :halign "fill")
@@ -165,35 +165,39 @@
     (box :class "qs-row" :orientation "h" :spacing 6 :halign "fill"
       (label :class "qs-row-label" :text "⏻  Power")
       (box :class "qs-power-pills" :orientation "h" :spacing 4
-        (qs-power-pill :label "󰓅  Perf" :command "system76-power performance 2>/dev/null")
-        (qs-power-pill :label "󰾡  Balanced" :command "system76-power balanced 2>/dev/null")
-        (qs-power-pill :label "󰍹  Battery" :command "system76-power battery 2>/dev/null")
+        (button :class "qs-power-pill" :onclick "system76-power performance" (label :text "󰓅"))
+        (button :class "qs-power-pill" :onclick "system76-power balanced" (label :text "󰾡"))
+        (button :class "qs-power-pill" :onclick "system76-power battery" (label :text "󰍹"))
       ))
   ))
 
-(defwidget qs-trigger []
-  (eventbox :onhover "eww update qs-reveal=true" :onhoverlost "eww update qs-reveal=false"
-    (box :class "qs-trigger" :halign "end" :valign "fill" :hexpand true :vexpand true
-      (label :css "min-width: 40px; background-color: rgba(0,0,0,0.01);"))))
-
 (defwidget quick-settings-content-wrapper []
-  (eventbox :onhoverlost "eww update qs-reveal=false"
-    (quick-settings-content)))
+  (eventbox :onhoverlost "/home/luca/.config/eww/scripts/qs-close.sh"
+    (revealer :transition "slideleft" :reveal qs-reveal :duration "250ms"
+      (quick-settings-content))))
 
 (defwidget quick-settings []
-  (box :class "qs-container" :halign "end" :valign "fill" :hexpand false :vexpand true
-    (revealer :transition "slideleft" :reveal qs-reveal :duration "300ms"
-      (quick-settings-content-wrapper))))
-
-(defwidget qs-combined []
-  (box :halign "end" :orientation "h" :valign "fill" :vexpand true
-    (quick-settings)
-    (qs-trigger)))
+  (box :class "qs-container" :halign "fill" :valign "fill" :vexpand true
+    (quick-settings-content-wrapper)))
 
 (defwindow qs-panel
   :monitor 0
-  :geometry (geometry :x "0px" :y "0px" :width "320px" :height "100%" :anchor "top right")
+  :geometry (geometry :x "0px" :y "52px" :width "160px" :height "100%" :anchor "top right")
   :stacking "overlay"
   :exclusive false
   :focusable false
-  (qs-combined))
+  :namespace "quick-settings"
+  (quick-settings))
+
+(defwidget qs-trigger []
+  (eventbox :onhover "/home/luca/.config/eww/scripts/qs-open.sh" :halign "end" :valign "fill" :vexpand true
+    (box :class "qs-trigger" :halign "end" :valign "fill" :vexpand true
+      (label :text ""))))
+
+(defwindow qs-trigger-window
+  :monitor 0
+  :geometry (geometry :x "0px" :y "0px" :width "5px" :height "100%" :anchor "top right")
+  :stacking "overlay"
+  :exclusive false
+  :focusable false
+  (qs-trigger))
