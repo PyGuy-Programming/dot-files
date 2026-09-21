@@ -137,6 +137,13 @@ window#qs-trigger {
   min-width: 5px;
 }
 
+.qs-panel.logo-menu {
+  border-right: 1px solid $qs-bg2;
+  border-radius: 10px;
+  margin: 0;
+  min-width: 210px;
+}
+
 // ---------------------------------------------------------------------------
 // Bar — Gruvbox dark
 // ---------------------------------------------------------------------------
@@ -170,6 +177,14 @@ window#bar {
   background-color: $bar-bg1;
   border-radius: 8px;
   padding: 2px 6px;
+}
+
+.power-box {
+  padding: 2px 6px 2px 9px;
+}
+
+.player {
+  margin-left: 60px;
 }
 
 .power-main {
@@ -209,10 +224,16 @@ window#bar {
 .net-icon {
   color: #83a598;
   font-size: 16px;
+  transition: margin 200ms ease;
+}
+
+.network:hover .net-icon {
+  margin-right: 10px;
 }
 
 .network {
-  padding: 2px 14px 2px 6px;
+  padding: 2px 9px 2px 6px;
+  transition: padding 200ms ease;
 }
 
 .net-text {
@@ -228,7 +249,7 @@ window#bar {
 .volume {
   background-color: $bar-bg1;
   border-radius: 8px;
-  padding: 2px 6px;
+  padding: 2px 9px 2px 6px;
 }
 
 .vol-btn {
@@ -257,7 +278,7 @@ window#bar {
 }
 
 .battery {
-  padding: 2px 12px 2px 6px;
+  padding: 2px 7px 2px 6px;
   border-radius: 8px;
   background-color: $bar-bg1;
 }

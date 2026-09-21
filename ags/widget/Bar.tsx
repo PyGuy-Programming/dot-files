@@ -1,9 +1,19 @@
 import app from "ags/gtk4/app"
 import { Astal, Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process"
-import { createPoll } from "ags/time"
+import { createPoll, timeout, type Timer } from "ags/time"
 import { createState, type Accessor } from "gnim"
 import SysTray from "./Tray"
+import {
+  EWW_SCRIPTS,
+  SliderRow,
+  brightness,
+  brightnessIcon,
+  nightlight,
+  powerProfile,
+  volume,
+  volumeIcon,
+} from "./QuickSettings"
 
 const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
 const EWW_SCRIPTS = "/home/luca/.config/eww/scripts"
@@ -301,6 +311,107 @@ function Clock() {
 }
 
 // ---------------------------------------------------------------------------
+// logo dropdown menu (night light, brightness, volume, power modes)
+// ---------------------------------------------------------------------------
+const [logoMenuVisible, setLogoMenuVisible] = createState(false)
+const [logoMenuRevealed, setLogoMenuRevealed] = createState(false)
+let logoGen = 0
+let logoCloseTimer: Timer | null = null
+
+function showLogoMenu() {
+  logoCloseTimer?.cancel()
+  logoCloseTimer = null
+  const g = ++logoGen
+  if (!logoMenuVisible.peek()) {
+    setLogoMenuVisible(true)
+    timeout(50, () => {
+      if (g === logoGen) setLogoMenuRevealed(true)
+    })
+  } else {
+    setLogoMenuRevealed(true)
+  }
+}
+
+function hideLogoMenuSoon() {
+  logoCloseTimer?.cancel()
+  const g = logoGen
+  logoCloseTimer = timeout(400, () => {
+    setLogoMenuRevealed(false)
+    timeout(250, () => {
+      if (g === logoGen) setLogoMenuVisible(false)
+    })
+  })
+}
+
+export function LogoMenu() {
+  return (
+    <window
+      name="logo-menu"
+      namespace="quick-settings"
+      visible={logoMenuVisible}
+      anchor={TOP | LEFT}
+      exclusivity={Astal.Exclusivity.IGNORE}
+      layer={Astal.Layer.OVERLAY}
+      keymode={Astal.Keymode.NONE}
+      marginTop={56}
+      marginLeft={10}
+      application={app}
+    >
+      <box $={hover(showLogoMenu, hideLogoMenuSoon)}>
+        <revealer
+          transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+          transitionDuration={250}
+          revealChild={logoMenuRevealed}
+        >
+          <box
+            class="qs-panel logo-menu"
+            orientation={Gtk.Orientation.VERTICAL}
+            spacing={6}
+            valign={Gtk.Align.START}
+          >
+            <button
+              class={nightlight.as((s) => `qs-pill${s.trim() === "on" ? " active" : ""}`)}
+              onClicked={() => execAsync(`${EWW_SCRIPTS}/nightlight-toggle.sh`).catch(() => {})}
+            >
+              <label label="󰖨  Night Light" />
+            </button>
+            <SliderRow
+              icon={brightnessIcon}
+              value={brightness}
+              onSet={(v) => execAsync(["brightnessctl", "set", `${v}%`]).catch(() => {})}
+            />
+            <SliderRow
+              icon={volumeIcon}
+              value={volume}
+              onSet={(v) => execAsync(["pamixer", "--set-volume", `${v}`]).catch(() => {})}
+            />
+            <box class="qs-row" spacing={6}>
+              <label class="qs-row-label" label="⏻  Power" />
+              <box spacing={4}>
+                {[
+                  ["󰓅", "performance"],
+                  ["󰾡", "balanced"],
+                  ["󰍹", "battery"],
+                ].map(([icon, profile]) => (
+                  <button
+                    class={powerProfile.as(
+                      (p) => `qs-power-pill${p.trim() === profile ? " active" : ""}`,
+                    )}
+                    onClicked={() => execAsync(["system76-power", "profile", profile]).catch(() => {})}
+                  >
+                    <label label={icon} />
+                  </button>
+                ))}
+              </box>
+            </box>
+          </box>
+        </revealer>
+      </box>
+    </window>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // bar window
 // ---------------------------------------------------------------------------
 export function Bar() {
@@ -320,7 +431,9 @@ export function Bar() {
     >
       <centerbox class="bar" orientation={Gtk.Orientation.HORIZONTAL}>
         <box $type="start" spacing={10} halign={Gtk.Align.START}>
-          <label class="distro" label="" />
+          <box $={hover(showLogoMenu, hideLogoMenuSoon)}>
+            <label class="distro" label="" />
+          </box>
           <Player />
         </box>
         <Clock $type="center" />

@@ -1,12 +1,13 @@
 import app from "ags/gtk4/app"
 import style from "./style.scss"
 import { QuickSettingsPanel, QuickSettingsTrigger, qsToggle } from "./widget/QuickSettings"
-import { Bar } from "./widget/Bar"
+import { Bar, LogoMenu } from "./widget/Bar"
 
 app.start({
   css: style,
   main() {
     Bar()
+    LogoMenu()
     QuickSettingsPanel()
     QuickSettingsTrigger()
   },

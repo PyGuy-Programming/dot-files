@@ -5,7 +5,7 @@ import { createPoll, timeout } from "ags/time"
 import { createState, type Accessor } from "gnim"
 
 const { TOP, RIGHT, BOTTOM } = Astal.WindowAnchor
-const EWW_SCRIPTS = "/home/luca/.config/eww/scripts"
+export const EWW_SCRIPTS = "/home/luca/.config/eww/scripts"
 
 // ---------------------------------------------------------------------------
 // open/close with slide animation
@@ -44,7 +44,7 @@ function sh(cmd: string): Promise<string> {
   return execAsync(["bash", "-c", cmd])
 }
 
-const brightness = createPoll(50, 2000, async (prev) => {
+export const brightness = createPoll(50, 2000, async (prev) => {
   try {
     const n = parseInt(
       await sh(`brightnessctl get 2>/dev/null | awk '{max=7500; pct=$1*100/max; print int(pct)}'`),
@@ -55,7 +55,7 @@ const brightness = createPoll(50, 2000, async (prev) => {
   }
 })
 
-const volume = createPoll(50, 1000, async (prev) => {
+export const volume = createPoll(50, 1000, async (prev) => {
   try {
     const n = parseInt(await sh(`pamixer --get-volume 2>/dev/null`))
     return Number.isNaN(n) ? prev : Math.max(0, Math.min(100, n))
@@ -64,7 +64,7 @@ const volume = createPoll(50, 1000, async (prev) => {
   }
 })
 
-const brightnessIcon = createPoll("󰃠", 2000, async (prev) => {
+export const brightnessIcon = createPoll("󰃠", 2000, async (prev) => {
   try {
     return await execAsync(`${EWW_SCRIPTS}/brightness-icon.sh`)
   } catch {
@@ -72,7 +72,7 @@ const brightnessIcon = createPoll("󰃠", 2000, async (prev) => {
   }
 })
 
-const volumeIcon = createPoll("󰕾", 1000, async (prev) => {
+export const volumeIcon = createPoll("󰕾", 1000, async (prev) => {
   try {
     return await execAsync(`${EWW_SCRIPTS}/volume-icon.sh`)
   } catch {
@@ -104,7 +104,7 @@ const bt = createPoll("no", 5000, async (prev) => {
   }
 })
 
-const nightlight = createPoll("off", 5000, async (prev) => {
+export const nightlight = createPoll("off", 5000, async (prev) => {
   try {
     await sh(`pgrep -f gammastep`)
     return "on"
@@ -122,9 +122,10 @@ const dnd = createPoll("off", 5000, async (prev) => {
   }
 })
 
-const powerProfile = createPoll("balanced", 10000, async (prev) => {
+export const powerProfile = createPoll("balanced", 10000, async (prev) => {
   try {
-    return await sh(`system76-power profile 2>/dev/null | grep -oP '(?<=\\* )\\w+'`)
+    const out = await sh(`system76-power profile 2>/dev/null | grep -oP '^Power Profile: \\K\\w+'`)
+    return out.trim() === "" ? prev : out.trim().toLowerCase()
   } catch {
     return prev
   }
@@ -145,7 +146,7 @@ function hover(onEnter: () => void, onLeave: () => void) {
 // ---------------------------------------------------------------------------
 // widgets
 // ---------------------------------------------------------------------------
-function SliderRow({
+export function SliderRow({
   icon,
   value,
   onSet,
@@ -171,7 +172,7 @@ function SliderRow({
   )
 }
 
-function Pill({
+export function Pill({
   label,
   active,
   onClicked,
@@ -291,7 +292,7 @@ export function QuickSettingsPanel() {
                     class={powerProfile.as(
                       (p) => `qs-power-pill${p.trim() === profile ? " active" : ""}`,
                     )}
-                    onClicked={() => execAsync(["system76-power", profile]).catch(() => {})}
+                    onClicked={() => execAsync(["system76-power", "profile", profile]).catch(() => {})}
                   >
                     <label label={icon} />
                   </button>

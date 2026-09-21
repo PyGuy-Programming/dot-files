@@ -165,9 +165,9 @@
     (box :class "qs-row" :orientation "h" :spacing 6 :halign "fill"
       (label :class "qs-row-label" :text "⏻  Power")
       (box :class "qs-power-pills" :orientation "h" :spacing 4
-        (button :class "qs-power-pill" :onclick "system76-power performance" (label :text "󰓅"))
-        (button :class "qs-power-pill" :onclick "system76-power balanced" (label :text "󰾡"))
-        (button :class "qs-power-pill" :onclick "system76-power battery" (label :text "󰍹"))
+        (button :class "qs-power-pill" :onclick "system76-power profile performance" (label :text "󰓅"))
+        (button :class "qs-power-pill" :onclick "system76-power profile balanced" (label :text "󰾡"))
+        (button :class "qs-power-pill" :onclick "system76-power profile battery" (label :text "󰍹"))
       ))
   ))
 
