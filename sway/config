@@ -62,6 +62,7 @@ layer_effects "fuzzel" blur enable; shadows enable; corner_radius 12
 layer_effects "swaync-notification-window" blur enable; blur_ignore_transparent enable; shadows enable; corner_radius 10
 layer_effects "swaync-control-center" blur enable; blur_ignore_transparent enable; shadows enable; corner_radius 10
 layer_effects "quick-settings" blur enable; blur_ignore_transparent enable; shadows enable; corner_radius 12
+layer_effects "logo-menu" blur disable; shadows enable; corner_radius 16
 # shadows
 shadows enable
 shadow_blur_radius 15
@@ -290,7 +291,7 @@ bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle && paplay /
 bindsym XF86AudioMicMute exec pamixer --default-source --toggle-mute 2>/dev/null || wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle 2>/dev/null; paplay /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga; notify-send -a sway "Mic" "$(pamixer --default-source --get-mute 2>/dev/null | grep -q true && echo muted || echo unmuted)"
 bindsym XF86MonBrightnessUp exec brightnessctl set +5%
 bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
-bindsym $mod+period exec ags request qs-toggle
+bindsym $mod+period exec ags request logo-menu
 
 # ── Bar (ags) - ags is the bar
 # bar {

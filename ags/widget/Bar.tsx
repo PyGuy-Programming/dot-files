@@ -318,7 +318,7 @@ const [logoMenuRevealed, setLogoMenuRevealed] = createState(false)
 let logoGen = 0
 let logoCloseTimer: Timer | null = null
 
-function showLogoMenu() {
+export function showLogoMenu() {
   logoCloseTimer?.cancel()
   logoCloseTimer = null
   const g = ++logoGen
@@ -343,11 +343,25 @@ function hideLogoMenuSoon() {
   })
 }
 
+export function toggleLogoMenu() {
+  if (logoMenuVisible.peek()) {
+    const g = ++logoGen
+    logoCloseTimer?.cancel()
+    logoCloseTimer = null
+    setLogoMenuRevealed(false)
+    timeout(250, () => {
+      if (g === logoGen) setLogoMenuVisible(false)
+    })
+  } else {
+    showLogoMenu()
+  }
+}
+
 export function LogoMenu() {
   return (
     <window
       name="logo-menu"
-      namespace="quick-settings"
+      namespace="logo-menu"
       visible={logoMenuVisible}
       anchor={TOP | LEFT}
       exclusivity={Astal.Exclusivity.IGNORE}
@@ -366,7 +380,7 @@ export function LogoMenu() {
           <box
             class="qs-panel logo-menu"
             orientation={Gtk.Orientation.VERTICAL}
-            spacing={6}
+            spacing={8}
             valign={Gtk.Align.START}
           >
             <button

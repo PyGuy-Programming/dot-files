@@ -138,10 +138,11 @@ window#qs-trigger {
 }
 
 .qs-panel.logo-menu {
-  border-right: 1px solid $qs-bg2;
-  border-radius: 10px;
+  border: 1px solid $qs-bg2;
+  border-radius: 16px;
+  padding: 10px 12px;
   margin: 0;
-  min-width: 210px;
+  min-width: 260px;
 }
 
 // ---------------------------------------------------------------------------
