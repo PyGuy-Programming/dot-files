@@ -1,11 +1,14 @@
-import { Gtk } from "ags/gtk4"
+import app from "ags/gtk4/app"
+import { Astal, Gtk } from "ags/gtk4"
 import GLib from "gi://GLib?version=2.0"
 import Gio from "gi://Gio?version=2.0"
 import { timeout, type Timer } from "ags/time"
-import { For, createState, onCleanup } from "gnim"
+import { For, createState } from "gnim"
 import AstalTray from "gi://AstalTray?version=0.1"
 
 type TrayItem = InstanceType<typeof AstalTray.TrayItem>
+
+const { TOP, RIGHT } = Astal.WindowAnchor
 
 const tray = AstalTray.Tray.get_default()
 const [items, setItems] = createState<Array<TrayItem>>([])
@@ -18,52 +21,182 @@ tray.connect("item_added", sync)
 tray.connect("item_removed", sync)
 sync()
 
-const openPopovers = new Set<Gtk.PopoverMenu>()
-const buttonWidgets = new Map<string, Gtk.Widget>()
+function hover(onEnter: () => void, onLeave: () => void) {
+  return (self: Gtk.Widget) => {
+    const m = new Gtk.EventControllerMotion()
+    m.connect("enter", onEnter)
+    m.connect("leave", onLeave)
+    self.add_controller(m)
+  }
+}
 
-function openItemMenu(item: TrayItem, parent: Gtk.Widget) {
+type MenuRow = { label: string; action: string; enabled: boolean }
+
+const [trayMenuVisible, setTrayMenuVisible] = createState(false)
+const [trayMenuRevealed, setTrayMenuRevealed] = createState(false)
+const [trayMenuRows, setTrayMenuRows] = createState<Array<MenuRow>>([])
+let trayMenuItem: TrayItem | null = null
+let trayMenuGen = 0
+let trayMenuCloseTimer: Timer | null = null
+
+function snapshotMenu(item: TrayItem): Array<MenuRow> {
+  const rows: Array<MenuRow> = []
+  const model = item.menu_model
+  if (!model) return rows
+  const strT = new GLib.VariantType("s")
+  const walk = (m: Gio.MenuModel) => {
+    for (let i = 0; i < m.get_n_items(); i++) {
+      let label = ""
+      let action = ""
+      try {
+        const it = m.iterate_item_attributes(i)
+        try {
+          while (it.next()) {
+            const n = it.get_name()
+            if (n !== "label" && n !== "action") continue
+            const v = it.get_value()
+            if (v && v.is_of_type(strT)) {
+              if (n === "label") label = v.unpack<string>()
+              else action = v.unpack<string>()
+            }
+          }
+        } finally {
+          try {
+            it.free()
+          } catch {
+            /* ignore */
+          }
+        }
+      } catch {
+        continue
+      }
+      if (label && action) {
+        let enabled = true
+        const dot = action.indexOf(".")
+        try {
+          if (dot > 0) enabled = item.action_group?.get_action_enabled(action.slice(dot + 1)) ?? true
+        } catch {
+          enabled = true
+        }
+        rows.push({ label, action, enabled })
+      }
+      for (const link of ["section", "submenu"]) {
+        const sub = m.get_item_link(i, link)
+        if (sub) walk(sub)
+      }
+    }
+  }
+  walk(model)
+  return rows
+}
+
+export function openTrayMenu(item: TrayItem) {
   try {
     item.about_to_show()
   } catch {
     /* ignore */
   }
-  const model = item.menu_model
-  if (!model) {
-    console.log(`tray: no menu for ${item.item_id}, secondary activate`)
-    try {
-      item.secondary_activate(0, 0)
-    } catch (e) {
-      console.error(`tray: secondary_activate failed: ${e}`)
-    }
-    return
-  }
-  try {
-    const pop = new Gtk.PopoverMenu()
-    pop.set_menu_model(model)
-    const ag = item.action_group
-    if (ag) pop.insert_action_group("dbusmenu", ag)
-    pop.set_position(Gtk.PositionType.BOTTOM)
-    pop.set_parent(parent)
-    openPopovers.add(pop)
-    pop.connect("closed", () => {
-      openPopovers.delete(pop)
-      pop.unparent()
+  setTrayMenuRows(snapshotMenu(item))
+  trayMenuItem = item
+  trayMenuCloseTimer?.cancel()
+  trayMenuCloseTimer = null
+  const g = ++trayMenuGen
+  if (!trayMenuVisible.peek()) {
+    setTrayMenuVisible(true)
+    timeout(50, () => {
+      if (g === trayMenuGen) setTrayMenuRevealed(true)
     })
-    console.log(`tray: opening menu for ${item.item_id}`)
-    pop.popup()
-  } catch (e) {
-    console.error(`tray: menu failed: ${e}`)
+  } else {
+    setTrayMenuRevealed(true)
   }
+}
+
+export function closeTrayMenuSoon() {
+  trayMenuCloseTimer?.cancel()
+  const g = trayMenuGen
+  trayMenuCloseTimer = timeout(300, () => {
+    setTrayMenuRevealed(false)
+    timeout(250, () => {
+      if (g === trayMenuGen) setTrayMenuVisible(false)
+    })
+  })
+}
+
+function clickTrayMenuRow(action: string) {
+  const dot = action.indexOf(".")
+  try {
+    if (dot > 0) trayMenuItem?.action_group?.activate_action(action.slice(dot + 1), null)
+  } catch (e) {
+    console.error(`tray: row dispatch failed: ${e}`)
+  }
+  const g = ++trayMenuGen
+  trayMenuCloseTimer?.cancel()
+  trayMenuCloseTimer = null
+  setTrayMenuRevealed(false)
+  timeout(200, () => {
+    if (g === trayMenuGen) setTrayMenuVisible(false)
+  })
+}
+
+export function TrayMenuWindow() {
+  return (
+    <window
+      name="tray-menu"
+      namespace="logo-menu"
+      visible={trayMenuVisible}
+      anchor={TOP | RIGHT}
+      exclusivity={Astal.Exclusivity.IGNORE}
+      layer={Astal.Layer.OVERLAY}
+      keymode={Astal.Keymode.NONE}
+      marginTop={56}
+      marginRight={200}
+      application={app}
+    >
+      <box $={hover(openTrayMenuKeepAlive, closeTrayMenuSoon)}>
+        <revealer
+          transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+          transitionDuration={250}
+          revealChild={trayMenuRevealed}
+        >
+          <box
+            class="qs-panel tray-menu"
+            orientation={Gtk.Orientation.VERTICAL}
+            spacing={4}
+            valign={Gtk.Align.START}
+          >
+            <scrolledwindow maxContentHeight={400} propagateNaturalHeight={true}>
+              <box orientation={Gtk.Orientation.VERTICAL} spacing={4}>
+                <For each={trayMenuRows} id={(row) => row.action}>
+                  {(row) => (
+                    <button
+                      class="tray-menu-item"
+                      sensitive={row.enabled}
+                      onClicked={() => clickTrayMenuRow(row.action)}
+                    >
+                      <label label={row.label} halign={Gtk.Align.START} />
+                    </button>
+                  )}
+                </For>
+              </box>
+            </scrolledwindow>
+          </box>
+        </revealer>
+      </box>
+    </window>
+  )
+}
+
+function openTrayMenuKeepAlive() {
+  trayMenuCloseTimer?.cancel()
+  trayMenuCloseTimer = null
+  setTrayMenuRevealed(true)
 }
 
 export function trayMenuTest(): string {
   const list = items.peek()
   if (list.length === 0) return "(tray empty)"
-  const item = list[0]
-  const widget = buttonWidgets.get(item.item_id)
-  if (!widget) return "no widget ref"
-  openItemMenu(item, widget)
-  return `opened menu for ${item.item_id}`
+  openTrayMenu(list[0])
+  return `opened menu for ${list[0].item_id}`
 }
 
 export function trayActionTest(): string {
@@ -112,21 +245,19 @@ function TrayButton({ item }: { item: TrayItem }) {
   const [tick, setTick] = createState(0)
   item.connect("changed", () => setTick((t) => t + 1))
 
-  const showMenu = (parent: Gtk.Widget) => openItemMenu(item, parent)
+  const showMenu = () => openTrayMenu(item)
 
   return (
     <box
       class="tray-btn"
       tooltipText={tick.as(() => item.tooltip_text || item.title)}
       $={(self) => {
-        buttonWidgets.set(item.item_id, self)
-        onCleanup(() => buttonWidgets.delete(item.item_id))
         const click = new Gtk.GestureClick()
         let singleTimer: Timer | null = null
         click.connect("pressed", (gesture, nPress) => {
           const btn = gesture.get_current_button()
           if (btn !== 1) {
-            if (btn === 2 || btn === 3) showMenu(self)
+            if (btn === 2 || btn === 3) showMenu()
             return
           }
           if (nPress === 2) {
@@ -134,7 +265,7 @@ function TrayButton({ item }: { item: TrayItem }) {
             singleTimer?.cancel()
             singleTimer = null
             console.log(`tray: double-click menu on ${item.item_id}`)
-            showMenu(self)
+            showMenu()
             return
           }
           // single press: arm delayed activate (cancelled by double-click/long-press)
@@ -167,7 +298,7 @@ function TrayButton({ item }: { item: TrayItem }) {
           singleTimer?.cancel()
           singleTimer = null
           console.log(`tray: long-press menu on ${item.item_id}`)
-          showMenu(self)
+          showMenu()
         })
         self.add_controller(hold)
         self.add_controller(scroll)
@@ -176,6 +307,13 @@ function TrayButton({ item }: { item: TrayItem }) {
       <image gicon={tick.as(() => item.gicon)} pixelSize={16} />
     </box>
   )
+}
+
+export function traySizes(): string {
+  const win = app.get_window("tray-menu")
+  if (!win) return "no window"
+  const child = win.get_child()
+  return `win=${win.get_width()}x${win.get_height()} child=${child?.get_width() ?? -1}x${child?.get_height() ?? -1}`
 }
 
 export function trayDebug(): string {

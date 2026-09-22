@@ -349,3 +349,28 @@ popover modelbutton:hover,
 popover box:hover {
   background-color: #504945;
 }
+
+.qs-panel.tray-menu {
+  border: 1px solid $qs-bg2;
+  border-radius: 12px;
+  padding: 6px 8px;
+  margin: 0;
+  min-width: 170px;
+}
+
+.tray-menu-item {
+  background-color: transparent;
+  color: $qs-fg;
+  border-radius: 7px;
+  padding: 4px 10px;
+  font-size: 11px;
+  transition: all 150ms ease;
+}
+
+.tray-menu-item:hover {
+  background-color: $qs-bg2;
+}
+
+.tray-menu-item:disabled {
+  color: $qs-gray;
+}
