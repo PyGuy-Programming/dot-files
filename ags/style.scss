@@ -322,11 +322,30 @@ window#bar {
 }
 
 .tray-btn {
-  padding: 0 2px;
+  padding: 2px 8px;
   border-radius: 6px;
   transition: all 200ms ease;
 }
 
 .tray-btn:hover {
+  background-color: #504945;
+}
+
+popover {
+  background-color: #3c3836;
+  border: 1px solid #504945;
+  border-radius: 10px;
+  padding: 4px;
+}
+
+popover label {
+  color: #ebdbb2;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+popover modelbutton:hover,
+popover box:hover {
   background-color: #504945;
 }

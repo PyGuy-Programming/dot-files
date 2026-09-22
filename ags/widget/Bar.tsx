@@ -153,8 +153,10 @@ function onScroll(up: () => void, down: () => void) {
 function onRightClick(cb: () => void) {
   return (self: Gtk.Widget) => {
     const g = new Gtk.GestureClick()
-    g.set_button(2)
-    g.connect("pressed", () => cb())
+    g.connect("pressed", (gesture) => {
+      const btn = gesture.get_current_button()
+      if (btn === 2 || btn === 3) cb()
+    })
     self.add_controller(g)
   }
 }
@@ -443,7 +445,22 @@ export function Bar() {
       marginRight={10}
       application={app}
     >
-      <centerbox class="bar" orientation={Gtk.Orientation.HORIZONTAL}>
+      <centerbox
+        class="bar"
+        orientation={Gtk.Orientation.HORIZONTAL}
+        $={(self) => {
+          const legacy = new Gtk.EventControllerLegacy()
+          legacy.connect("event", (_c, event) => {
+            const t = event.get_event_type()
+            if (t === 4 || t === 5) {
+              const [ok, x, y] = event.get_position()
+              console.log(`bar click type=${t} button=${event.get_button()} x=${x} y=${y}`)
+            }
+            return false
+          })
+          self.add_controller(legacy)
+        }}
+      >
         <box $type="start" spacing={10} halign={Gtk.Align.START}>
           <box $={hover(showLogoMenu, hideLogoMenuSoon)}>
             <label class="distro" label="" />
